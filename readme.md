@@ -119,8 +119,14 @@ docker volume inspect poligran-mysql-data
 # Ejecutar contenedor MySQL con variables de entorno, red, volumen y puertos
 docker run -d --name poligran-mysql  --network poligran-net --restart unless-stopped  -e MYSQL_ROOT_PASSWORD=poligran2024  -e MYSQL_DATABASE=politecnico_db  -e MYSQL_USER=poligran_user  -e MYSQL_PASSWORD=poligran_pass  -p 3306:3306 -v poligran-mysql-data:/var/lib/mysql poligran-mysql-img
 
+# Ver logs de mysql
+docker logs -f poligran-mysql
+
 # Ejecutar contenedor de la aplicación Quarkus conectada a la red del proyecto
 docker run -d --name poligran-app --network poligran-net --restart unless-stopped -e QUARKUS_DATASOURCE_JDBC_URL="jdbc:mysql://poligran-mysql:3306/politecnico_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Bogota" -e QUARKUS_DATASOURCE_USERNAME=poligran_user -e QUARKUS_DATASOURCE_PASSWORD=poligran_pass  -p 8989:8989 poligran-quarkus-img
+
+# Ver logs de quarkus
+docker logs -f poligran-app
 
 # Inspeccionar la red: subnet, gateway, contenedores conectados, opciones
 docker network inspect poligran-net
