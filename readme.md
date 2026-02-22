@@ -146,7 +146,7 @@ docker rm -f poligran-app
 docker network rm poligran-net
 
 # Eliminar el volumen
-docker volumen r poligran-mysql-data
+docker volume poligran-mysql-data
 ```
 
 ---
