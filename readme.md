@@ -147,6 +147,10 @@ docker network rm poligran-net
 
 # Eliminar el volumen
 docker volume rm poligran-mysql-data
+
+# Borrar imagenes generadas manualmente
+docker rmi poligran-net
+docker rmi poligran-mysql-data
 ```
 
 ---
