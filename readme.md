@@ -2,7 +2,7 @@
 
 **Integrantes:**
 Néstor Vélez Vargas
-
+Juan Zamorano Zapata
 ---
 
 ## Instalación de Docker Desktop
