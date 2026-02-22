@@ -1,0 +1,2182 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Politécnico Gran Colombiano — Gestión Académica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════════════════════════ */
+    :root {
+      /* Brand */
+      --red:           #D0021B;
+      --red-vivid:     #FF1F3A;
+      --red-glow:      rgba(208, 2, 27, 0.25);
+      --gold:          #E8A400;
+      --gold-soft:     rgba(232, 164, 0, 0.15);
+
+      /* Surfaces */
+      --bg-base:       #0A0C10;
+      --bg-raised:     #111318;
+      --bg-overlay:    #181C23;
+      --bg-card:       #1A1F29;
+      --bg-hover:      #222838;
+      --bg-input:      #13161E;
+
+      /* Borders */
+      --border-subtle: rgba(255,255,255,0.06);
+      --border-mid:    rgba(255,255,255,0.12);
+      --border-accent: rgba(208, 2, 27, 0.4);
+
+      /* Text */
+      --text-primary:  #F0F2F7;
+      --text-secondary:#8B92A8;
+      --text-muted:    #4E5568;
+      --text-inverse:  #0A0C10;
+
+      /* Status */
+      --green:  #00C896;
+      --green-bg: rgba(0,200,150,0.12);
+      --amber:  #F59E0B;
+      --amber-bg: rgba(245,158,11,0.12);
+      --blue:   #3B82F6;
+      --blue-bg: rgba(59,130,246,0.12);
+      --purple: #8B5CF6;
+      --purple-bg: rgba(139,92,246,0.12);
+
+      /* Spatial */
+      --radius-sm:  6px;
+      --radius-md:  10px;
+      --radius-lg:  16px;
+      --radius-xl:  24px;
+      --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
+      --shadow-md:  0 4px 16px rgba(0,0,0,0.5);
+      --shadow-lg:  0 12px 40px rgba(0,0,0,0.6);
+      --shadow-red: 0 0 24px rgba(208,2,27,0.2);
+
+      /* Motion */
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-out: cubic-bezier(0, 0, 0.2, 1);
+      --dur-fast: 120ms;
+      --dur-mid:  220ms;
+      --dur-slow: 380ms;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Instrument Sans', system-ui, sans-serif;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       SIDEBAR LAYOUT
+    ═══════════════════════════════════════════════════════════ */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      grid-template-rows: auto 1fr;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── TOPBAR ────────────────────────────────────────────── */
+    .topbar {
+      grid-column: 1 / -1;
+      height: 60px;
+      background: var(--bg-raised);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      background: var(--red);
+      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      color: white;
+      box-shadow: var(--shadow-red);
+      position: relative;
+      overflow: hidden;
+    }
+    .brand-mark::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -30%;
+      width: 60%;
+      height: 100%;
+      background: rgba(255,255,255,0.15);
+      transform: skewX(-20deg);
+    }
+
+    .brand-name {
+      line-height: 1.15;
+    }
+    .brand-name strong {
+      display: block;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--text-primary);
+      letter-spacing: 0.01em;
+    }
+    .brand-name span {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.03em;
+    }
+
+    .topbar-pills {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .pill {
+      height: 28px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pill-live {
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid rgba(0,200,150,0.2);
+    }
+    .pill-live .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .topbar-clock {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── SIDEBAR ───────────────────────────────────────────── */
+    .sidebar {
+      background: var(--bg-raised);
+      border-right: 1px solid var(--border-subtle);
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+      overflow-y: auto;
+    }
+
+    .sidebar-section {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 12px 12px 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background var(--dur-fast) var(--ease),
+                  color var(--dur-fast) var(--ease);
+      color: var(--text-secondary);
+      font-size: 13.5px;
+      font-weight: 500;
+      position: relative;
+      user-select: none;
+      border: 1px solid transparent;
+    }
+    .nav-item:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+    .nav-item.active {
+      background: rgba(208, 2, 27, 0.12);
+      color: #FF4D6A;
+      border-color: rgba(208, 2, 27, 0.2);
+    }
+    .nav-item.active .nav-icon { color: var(--red-vivid); }
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 25%;
+      height: 50%;
+      width: 3px;
+      background: var(--red-vivid);
+      border-radius: 0 3px 3px 0;
+    }
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      opacity: 0.8;
+    }
+    .nav-badge {
+      margin-left: auto;
+      background: var(--bg-overlay);
+      border: 1px solid var(--border-mid);
+      color: var(--text-secondary);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 999px;
+      min-width: 22px;
+      text-align: center;
+    }
+    .nav-item.active .nav-badge {
+      background: rgba(208,2,27,0.2);
+      border-color: rgba(208,2,27,0.3);
+      color: #FF6B7A;
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background: var(--border-subtle);
+      margin: 8px 0;
+    }
+
+    /* ── MAIN CONTENT ──────────────────────────────────────── */
+    .main {
+      padding: 28px 32px;
+      overflow-y: auto;
+      max-height: calc(100vh - 60px);
+    }
+
+    /* ─── PAGE HEADER ─── */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      gap: 16px;
+    }
+
+    .page-header-left {}
+
+    .page-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--red-vivid);
+      margin-bottom: 4px;
+    }
+
+    .page-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .page-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* ─── VIEWS (Pages) ─── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ─── STATS GRID ─── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color var(--dur-mid) var(--ease),
+                  transform var(--dur-mid) var(--ease);
+    }
+    .stat-card:hover {
+      border-color: var(--border-mid);
+      transform: translateY(-2px);
+    }
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent, var(--red));
+      opacity: 0.6;
+    }
+    .stat-card[data-accent="gold"]   { --accent: var(--gold); }
+    .stat-card[data-accent="green"]  { --accent: var(--green); }
+    .stat-card[data-accent="blue"]   { --accent: var(--blue); }
+    .stat-card[data-accent="purple"] { --accent: var(--purple); }
+
+    .stat-icon {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      font-size: 18px;
+    }
+    .stat-icon-red    { background: rgba(208,2,27,0.15); }
+    .stat-icon-gold   { background: var(--gold-soft); }
+    .stat-icon-green  { background: var(--green-bg); }
+    .stat-icon-blue   { background: var(--blue-bg); }
+    .stat-icon-purple { background: var(--purple-bg); }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      letter-spacing: -0.04em;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+    .stat-delta {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--green);
+      background: var(--green-bg);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    /* ─── SECTION HEADER ─── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    /* ─── SEARCH BAR ─── */
+    .search-bar {
+      position: relative;
+      flex: 1;
+      max-width: 320px;
+    }
+    .search-bar input {
+      width: 100%;
+      height: 36px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-md);
+      padding: 0 12px 0 36px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text-primary);
+      transition: border-color var(--dur-fast) var(--ease);
+      outline: none;
+    }
+    .search-bar input::placeholder { color: var(--text-muted); }
+    .search-bar input:focus { border-color: var(--border-accent); }
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      font-size: 14px;
+    }
+
+    /* ─── TABLE ─── */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--bg-overlay);
+      border-bottom: 1px solid var(--border-mid);
+    }
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      transition: color var(--dur-fast);
+    }
+    th:hover { color: var(--text-secondary); }
+    th .sort-icon { opacity: 0.4; margin-left: 4px; font-size: 10px; }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border-subtle);
+      transition: background var(--dur-fast) var(--ease);
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.025); }
+
+    td {
+      padding: 14px 16px;
+      font-size: 13.5px;
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+
+    .td-mono {
+      font-size: 12px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: var(--text-secondary);
+    }
+
+    .td-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      color: white;
+      flex-shrink: 0;
+    }
+    .avatar-red    { background: linear-gradient(135deg, #D0021B, #FF4D6A); }
+    .avatar-blue   { background: linear-gradient(135deg, #1D4ED8, #3B82F6); }
+    .avatar-green  { background: linear-gradient(135deg, #065F46, #00C896); }
+    .avatar-amber  { background: linear-gradient(135deg, #92400E, #F59E0B); }
+    .avatar-purple { background: linear-gradient(135deg, #4C1D95, #8B5CF6); }
+
+    .td-name-info strong {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .td-name-info small {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* ─── BADGES ─── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+    .badge-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+    }
+    .badge-green  { background: var(--green-bg);  color: var(--green);  border: 1px solid rgba(0,200,150,0.2); }
+    .badge-green .badge-dot { background: var(--green); }
+    .badge-red    { background: rgba(208,2,27,0.12); color: #FF6B7A; border: 1px solid rgba(208,2,27,0.2); }
+    .badge-red .badge-dot { background: #FF6B7A; }
+    .badge-gold   { background: var(--gold-soft);  color: var(--gold);  border: 1px solid rgba(232,164,0,0.2); }
+    .badge-blue   { background: var(--blue-bg);   color: var(--blue);  border: 1px solid rgba(59,130,246,0.2); }
+    .badge-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid rgba(139,92,246,0.2); }
+    .badge-amber  { background: var(--amber-bg);  color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+
+    /* ─── ACTION BUTTONS ─── */
+    .actions-cell { display: flex; gap: 6px; align-items: center; }
+
+    .btn-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-mid);
+      background: transparent;
+      color: var(--text-secondary);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all var(--dur-fast) var(--ease);
+    }
+    .btn-icon:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-mid); }
+    .btn-icon.edit:hover  { background: var(--blue-bg); color: var(--blue); border-color: rgba(59,130,246,0.3); }
+    .btn-icon.delete:hover{ background: rgba(208,2,27,0.12); color: #FF6B7A; border-color: rgba(208,2,27,0.3); }
+
+    /* ─── PRIMARY & SECONDARY BUTTONS ─── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 36px;
+      padding: 0 16px;
+      border-radius: var(--radius-md);
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all var(--dur-fast) var(--ease);
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+    }
+    .btn-primary {
+      background: var(--red);
+      color: white;
+      box-shadow: 0 2px 8px rgba(208,2,27,0.3);
+    }
+    .btn-primary:hover {
+      background: var(--red-vivid);
+      box-shadow: 0 4px 16px rgba(208,2,27,0.45);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-secondary {
+      background: var(--bg-overlay);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-mid);
+    }
+    .btn-secondary:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--border-mid);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+    }
+    .btn-ghost:hover { background: var(--bg-hover); color: var(--text-secondary); }
+    .btn-danger-soft {
+      background: rgba(208,2,27,0.1);
+      color: #FF6B7A;
+      border: 1px solid rgba(208,2,27,0.2);
+    }
+    .btn-danger-soft:hover { background: rgba(208,2,27,0.2); }
+
+    .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* ─── EMPTY STATE ─── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .empty-state-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      opacity: 0.4;
+    }
+    .empty-state h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .empty-state p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ─── LOADING SHIMMER ─── */
+    .shimmer-row td {
+      padding: 16px;
+    }
+    .shimmer-cell {
+      height: 14px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--bg-overlay) 25%, var(--bg-hover) 50%, var(--bg-overlay) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       DRAWER (SLIDE-IN PANEL)
+    ═══════════════════════════════════════════════════════════ */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--dur-slow) var(--ease);
+      z-index: 200;
+    }
+    .drawer-backdrop.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(520px, 100vw);
+      height: 100vh;
+      background: var(--bg-raised);
+      border-left: 1px solid var(--border-mid);
+      transform: translateX(100%);
+      transition: transform var(--dur-slow) var(--ease-out);
+      z-index: 201;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -20px 0 60px rgba(0,0,0,0.5);
+    }
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .drawer-header-left {}
+    .drawer-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--red-vivid);
+      margin-bottom: 4px;
+    }
+    .drawer-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+    .drawer-close {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-overlay);
+      border: 1px solid var(--border-mid);
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      transition: all var(--dur-fast);
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .drawer-close:hover { background: rgba(208,2,27,0.12); color: #FF6B7A; border-color: rgba(208,2,27,0.3); }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px;
+    }
+    .drawer-body::-webkit-scrollbar { width: 4px; }
+    .drawer-body::-webkit-scrollbar-track { background: transparent; }
+    .drawer-body::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 4px; }
+
+    .drawer-footer {
+      padding: 16px 28px 24px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
+
+    /* ─── FORM FIELDS ─── */
+    .form-section {
+      margin-bottom: 24px;
+    }
+    .form-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .field label .required {
+      color: var(--red-vivid);
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      background: var(--bg-input);
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-md);
+      padding: 10px 13px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 13.5px;
+      color: var(--text-primary);
+      transition: border-color var(--dur-fast) var(--ease),
+                  box-shadow var(--dur-fast) var(--ease);
+      outline: none;
+      width: 100%;
+      appearance: none;
+    }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238B92A8' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+    .field textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.6;
+    }
+    .field input::placeholder,
+    .field textarea::placeholder { color: var(--text-muted); }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(208,2,27,0.12);
+    }
+    .field input.error,
+    .field select.error,
+    .field textarea.error {
+      border-color: rgba(208,2,27,0.6);
+      box-shadow: 0 0 0 3px rgba(208,2,27,0.08);
+    }
+
+    .field-hint {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .field-error {
+      font-size: 11.5px;
+      color: #FF6B7A;
+      margin-top: 2px;
+      display: none;
+    }
+    .field-error.show { display: block; }
+
+    /* Toggle Switch */
+    .toggle-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-input);
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-md);
+      padding: 10px 13px;
+    }
+    .toggle-field-label { font-size: 13.5px; color: var(--text-secondary); font-weight: 500; }
+    .toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--border-mid);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background var(--dur-fast) var(--ease);
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: white;
+      left: 3px;
+      top: 3px;
+      transition: transform var(--dur-fast) var(--ease);
+      box-shadow: var(--shadow-sm);
+    }
+    .toggle input:checked + .toggle-slider { background: var(--green); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    /* ═══════════════════════════════════════════════════════════
+       CONFIRM DIALOG
+    ═══════════════════════════════════════════════════════════ */
+    .dialog-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      display: grid;
+      place-items: center;
+      z-index: 300;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--dur-mid) var(--ease);
+    }
+    .dialog-overlay.open { opacity: 1; pointer-events: all; }
+
+    .dialog {
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      width: min(420px, 90vw);
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.95) translateY(8px);
+      transition: transform var(--dur-mid) var(--ease-out);
+    }
+    .dialog-overlay.open .dialog { transform: scale(1) translateY(0); }
+
+    .dialog-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: rgba(208,2,27,0.12);
+      border: 1px solid rgba(208,2,27,0.2);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+    .dialog h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+    .dialog p {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .dialog-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ═══════════════════════════════════════════════════════════
+       TOAST NOTIFICATIONS
+    ═══════════════════════════════════════════════════════════ */
+    .toast-stack {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 400;
+      pointer-events: none;
+    }
+
+    .toast {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      min-width: 300px;
+      max-width: 380px;
+      box-shadow: var(--shadow-lg);
+      transform: translateX(120%);
+      opacity: 0;
+      transition: transform var(--dur-slow) var(--ease-out),
+                  opacity var(--dur-slow) var(--ease-out);
+      pointer-events: all;
+    }
+    .toast.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    .toast.hide {
+      transform: translateX(120%);
+      opacity: 0;
+    }
+    .toast-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .toast.success .toast-icon { background: var(--green-bg); }
+    .toast.error   .toast-icon { background: rgba(208,2,27,0.12); }
+    .toast.warning .toast-icon { background: var(--amber-bg); }
+    .toast.info    .toast-icon { background: var(--blue-bg); }
+    .toast-content {}
+    .toast-title {
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    .toast-msg {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+    .toast-progress {
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 2px;
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      background: var(--green);
+      animation: toast-progress 3.5s linear forwards;
+    }
+    .toast.error .toast-progress   { background: #FF6B7A; }
+    .toast.warning .toast-progress { background: var(--amber); }
+    .toast.info .toast-progress    { background: var(--blue); }
+    @keyframes toast-progress {
+      from { width: 100%; }
+      to   { width: 0%; }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       DASHBOARD SPECIFICS
+    ═══════════════════════════════════════════════════════════ */
+    .welcome-banner {
+      background: linear-gradient(135deg, #0D1117 0%, #1A1F2E 50%, #0D1117 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .welcome-banner::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      right: -10%;
+      width: 360px;
+      height: 360px;
+      background: radial-gradient(circle, rgba(208,2,27,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .welcome-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: 5%;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(232,164,0,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .welcome-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(208,2,27,0.1);
+      border: 1px solid rgba(208,2,27,0.2);
+      color: #FF6B7A;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+    .welcome-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.2;
+      margin-bottom: 8px;
+      letter-spacing: -0.03em;
+    }
+    .welcome-title span { color: var(--red-vivid); }
+    .welcome-sub {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 500px;
+    }
+
+    /* Recent items list */
+    .recent-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .recent-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: var(--radius-md);
+      transition: background var(--dur-fast);
+      cursor: pointer;
+    }
+    .recent-item:hover { background: var(--bg-hover); }
+    .recent-item-info { flex: 1; min-width: 0; }
+    .recent-item-name {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .recent-item-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .recent-item-right { flex-shrink: 0; }
+
+    /* Scrollbars */
+    .main::-webkit-scrollbar { width: 6px; }
+    .main::-webkit-scrollbar-track { background: transparent; }
+    .main::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 6px; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .main { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ════════════════════════════════ TOPBAR ════════════════════════════════ -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-mark">P</div>
+      <div class="brand-name">
+        <strong>Politécnico Gran Colombiano</strong>
+        <span>Sistema de Gestión Académica</span>
+      </div>
+    </div>
+    <div class="topbar-pills">
+      <div class="pill pill-live">
+        <span class="dot"></span>
+        Sistema activo
+      </div>
+    </div>
+    <div class="topbar-clock" id="clock">--:--:--</div>
+  </header>
+
+  <!-- ════════════════════════════════ SIDEBAR ════════════════════════════════ -->
+  <nav class="sidebar">
+    <div class="sidebar-section">Principal</div>
+
+    <div class="nav-item active" onclick="navigate('dashboard', this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      Dashboard
+    </div>
+
+    <div class="sidebar-section">Módulos</div>
+
+    <div class="nav-item" onclick="navigate('docentes', this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+      Docentes
+      <span class="nav-badge" id="nb-docentes">–</span>
+    </div>
+
+    <div class="nav-item" onclick="navigate('asignaturas', this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </svg>
+      Asignaturas
+      <span class="nav-badge" id="nb-asignaturas">–</span>
+    </div>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">Info</div>
+
+    <div class="nav-item" onclick="navigate('api', this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+      </svg>
+      API REST
+    </div>
+  </nav>
+
+  <!-- ════════════════════════════════ MAIN ════════════════════════════════ -->
+  <main class="main">
+
+    <!-- ── DASHBOARD ──────────────────────────────────────────────────────── -->
+    <div id="view-dashboard" class="view active">
+      <div class="page-header">
+        <div class="page-header-left">
+          <div class="page-eyebrow">Panel Principal</div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle" id="dash-date">Cargando...</p>
+        </div>
+      </div>
+
+      <div class="welcome-banner">
+        <div class="welcome-badge">🎓 Sistema Académico</div>
+        <div class="welcome-title">Bienvenido al <span>Sistema de Gestión</span></div>
+        <p class="welcome-sub">Administra el cuerpo docente y el catálogo de asignaturas del Politécnico Gran Colombiano de forma ágil y eficiente.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card" data-accent="red">
+          <div class="stat-icon stat-icon-red">👨‍🏫</div>
+          <div class="stat-num" id="st-docentes">–</div>
+          <div class="stat-label">Docentes Registrados</div>
+        </div>
+        <div class="stat-card" data-accent="gold">
+          <div class="stat-icon stat-icon-gold">📚</div>
+          <div class="stat-num" id="st-asignaturas">–</div>
+          <div class="stat-label">Asignaturas</div>
+        </div>
+        <div class="stat-card" data-accent="green">
+          <div class="stat-icon stat-icon-green">✅</div>
+          <div class="stat-num" id="st-activos">–</div>
+          <div class="stat-label">Docentes Activos</div>
+        </div>
+        <div class="stat-card" data-accent="blue">
+          <div class="stat-icon stat-icon-blue">⭐</div>
+          <div class="stat-num" id="st-obligatorias">–</div>
+          <div class="stat-label">Asig. Obligatorias</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="table-container">
+          <div style="padding:18px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between">
+            <span class="section-title">Docentes Recientes</span>
+            <button class="btn btn-ghost" onclick="navigate('docentes', document.querySelectorAll('.nav-item')[2])">Ver todos →</button>
+          </div>
+          <div class="recent-list" id="recent-docentes" style="padding:8px">
+            <div class="shimmer-row"><td><div class="shimmer-cell" style="width:80%"></div></td></div>
+          </div>
+        </div>
+        <div class="table-container">
+          <div style="padding:18px 20px;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between">
+            <span class="section-title">Asignaturas Recientes</span>
+            <button class="btn btn-ghost" onclick="navigate('asignaturas', document.querySelectorAll('.nav-item')[3])">Ver todas →</button>
+          </div>
+          <div class="recent-list" id="recent-asignaturas" style="padding:8px">
+            <div class="shimmer-row"><td><div class="shimmer-cell" style="width:80%"></div></td></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DOCENTES ───────────────────────────────────────────────────────── -->
+    <div id="view-docentes" class="view">
+      <div class="page-header">
+        <div class="page-header-left">
+          <div class="page-eyebrow">Módulo de Personal</div>
+          <h1 class="page-title">Docentes</h1>
+          <p class="page-subtitle">Gestión completa del cuerpo docente</p>
+        </div>
+        <button class="btn btn-primary" onclick="openDocenteDrawer()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Nuevo Docente
+        </button>
+      </div>
+
+      <div class="section-header">
+        <span class="section-title" id="docentes-count-label">Todos los docentes</span>
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-docentes" placeholder="Buscar por nombre, cédula o correo…" oninput="filterDocentes()"/>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Docente</th>
+              <th>Cédula</th>
+              <th>Contacto</th>
+              <th>Ingreso</th>
+              <th>Contrato</th>
+              <th>Estado</th>
+              <th style="width:90px">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-docentes">
+            <tr class="shimmer-row">
+              <td><div class="shimmer-cell" style="width:180px;height:14px"></div></td>
+              <td><div class="shimmer-cell" style="width:90px;height:14px"></div></td>
+              <td><div class="shimmer-cell" style="width:150px;height:14px"></div></td>
+              <td><div class="shimmer-cell" style="width:80px;height:14px"></div></td>
+              <td><div class="shimmer-cell" style="width:70px;height:14px"></div></td>
+              <td><div class="shimmer-cell" style="width:60px;height:14px"></div></td>
+              <td><div class="shimmer-cell" style="width:60px;height:14px"></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ASIGNATURAS ────────────────────────────────────────────────────── -->
+    <div id="view-asignaturas" class="view">
+      <div class="page-header">
+        <div class="page-header-left">
+          <div class="page-eyebrow">Plan de Estudios</div>
+          <h1 class="page-title">Asignaturas</h1>
+          <p class="page-subtitle">Gestión del catálogo académico</p>
+        </div>
+        <button class="btn btn-primary" onclick="openAsignaturaDrawer()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Nueva Asignatura
+        </button>
+      </div>
+
+      <div class="section-header">
+        <span class="section-title" id="asignaturas-count-label">Todas las asignaturas</span>
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-asignaturas" placeholder="Buscar por código, nombre o docente…" oninput="filterAsignaturas()"/>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Asignatura</th>
+              <th>Créditos</th>
+              <th>Hrs/Sem</th>
+              <th>Docente</th>
+              <th>Creación</th>
+              <th>Tipo</th>
+              <th style="width:90px">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-asignaturas">
+            <tr class="shimmer-row">
+              <td><div class="shimmer-cell" style="width:60px;height:14px"></div></td>
+              <td><div class="shimmer-cell" style="width:160px;height:14px"></div></td>
+              <td><div class="shimmer-cell" style="width:50px;height:14px"></div></td>
+              <td><div class="shimmer-cell" style="width:50px;height:14px"></div></td>
+              <td><div class="shimmer-cell" style="width:140px;height:14px"></div></td>
+              <td><div class="shimmer-cell" style="width:80px;height:14px"></div></td>
+              <td><div class="shimmer-cell" style="width:80px;height:14px"></div></td>
+              <td><div class="shimmer-cell" style="width:60px;height:14px"></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── API REST INFO ───────────────────────────────────────────────────── -->
+    <div id="view-api" class="view">
+      <div class="page-header">
+        <div class="page-header-left">
+          <div class="page-eyebrow">Documentación</div>
+          <h1 class="page-title">API REST</h1>
+          <p class="page-subtitle">Endpoints disponibles en esta instancia</p>
+        </div>
+        <a href="/q/swagger-ui" target="_blank" class="btn btn-secondary">
+          Abrir Swagger UI ↗
+        </a>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead><tr><th>Método</th><th>Endpoint</th><th>Código</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-green">GET</span></td><td class="td-mono">/api/docentes</td><td class="td-mono">200</td><td>Listar docentes</td></tr>
+            <tr><td><span class="badge badge-green">GET</span></td><td class="td-mono">/api/docentes/{id}</td><td class="td-mono">200/404</td><td>Obtener docente</td></tr>
+            <tr><td><span class="badge badge-blue">POST</span></td><td class="td-mono">/api/docentes</td><td class="td-mono">201</td><td>Crear docente</td></tr>
+            <tr><td><span class="badge badge-amber">PUT</span></td><td class="td-mono">/api/docentes/{id}</td><td class="td-mono">200/404</td><td>Actualizar docente</td></tr>
+            <tr><td><span class="badge badge-red">DELETE</span></td><td class="td-mono">/api/docentes/{id}</td><td class="td-mono">204/409</td><td>Eliminar docente</td></tr>
+            <tr><td><span class="badge badge-green">GET</span></td><td class="td-mono">/api/asignaturas</td><td class="td-mono">200</td><td>Listar asignaturas</td></tr>
+            <tr><td><span class="badge badge-green">GET</span></td><td class="td-mono">/api/asignaturas/{id}</td><td class="td-mono">200/404</td><td>Obtener asignatura</td></tr>
+            <tr><td><span class="badge badge-blue">POST</span></td><td class="td-mono">/api/asignaturas</td><td class="td-mono">201</td><td>Crear asignatura</td></tr>
+            <tr><td><span class="badge badge-amber">PUT</span></td><td class="td-mono">/api/asignaturas/{id}</td><td class="td-mono">200/404</td><td>Actualizar asignatura</td></tr>
+            <tr><td><span class="badge badge-red">DELETE</span></td><td class="td-mono">/api/asignaturas/{id}</td><td class="td-mono">204/404</td><td>Eliminar asignatura</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div><!-- .layout -->
+
+<!-- ════════════════════════════════════════════════════════════
+     DRAWER – DOCENTE
+════════════════════════════════════════════════════════════ -->
+<div class="drawer-backdrop" id="backdrop-docente" onclick="closeDocenteDrawer()"></div>
+<div class="drawer" id="drawer-docente">
+  <div class="drawer-header">
+    <div class="drawer-header-left">
+      <div class="drawer-eyebrow" id="drawer-docente-eyebrow">Nuevo Registro</div>
+      <div class="drawer-title" id="drawer-docente-title">Crear Docente</div>
+    </div>
+    <button class="drawer-close" onclick="closeDocenteDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
+    <input type="hidden" id="d-id"/>
+
+    <div class="form-section">
+      <div class="form-section-title">Información Personal</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombres <span class="required">*</span></label>
+          <input id="d-nombres" type="text" placeholder="Ej: Carlos Andrés"/>
+          <div class="field-error" id="err-d-nombres">Campo obligatorio</div>
+        </div>
+        <div class="field">
+          <label>Apellidos <span class="required">*</span></label>
+          <input id="d-apellidos" type="text" placeholder="Ej: Ramírez Mora"/>
+          <div class="field-error" id="err-d-apellidos">Campo obligatorio</div>
+        </div>
+        <div class="field">
+          <label>Cédula <span class="required">*</span></label>
+          <input id="d-cedula" type="text" placeholder="Ej: 79123456"/>
+          <div class="field-error" id="err-d-cedula">Campo obligatorio</div>
+        </div>
+        <div class="field">
+          <label>Teléfono</label>
+          <input id="d-telefono" type="tel" placeholder="Ej: 3001112233"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Información Institucional</div>
+      <div class="form-grid">
+        <div class="field full">
+          <label>Correo institucional <span class="required">*</span></label>
+          <input id="d-correo" type="email" placeholder="docente@poligran.edu.co"/>
+          <div class="field-error" id="err-d-correo">Correo válido requerido</div>
+        </div>
+        <div class="field">
+          <label>Fecha de Ingreso <span class="required">*</span></label>
+          <input id="d-fecha" type="date"/>
+          <div class="field-error" id="err-d-fecha">Fecha requerida</div>
+        </div>
+        <div class="field">
+          <label>Tipo de Contrato <span class="required">*</span></label>
+          <select id="d-contrato">
+            <option value="">-- Seleccione --</option>
+            <option value="P">🏛️ Planta</option>
+            <option value="C">📋 Cátedra</option>
+            <option value="T">⏳ Temporal</option>
+          </select>
+          <div class="field-error" id="err-d-contrato">Seleccione un tipo</div>
+        </div>
+        <div class="field full">
+          <label>Estado del Docente</label>
+          <div class="toggle-field">
+            <span class="toggle-field-label">Docente activo en el sistema</span>
+            <label class="toggle">
+              <input type="checkbox" id="d-activo" checked/>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <button class="btn btn-ghost" onclick="closeDocenteDrawer()">Cancelar</button>
+    <button class="btn btn-primary" id="btn-save-docente" onclick="saveDocente()">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Guardar Docente
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     DRAWER – ASIGNATURA
+════════════════════════════════════════════════════════════ -->
+<div class="drawer-backdrop" id="backdrop-asignatura" onclick="closeAsignaturaDrawer()"></div>
+<div class="drawer" id="drawer-asignatura">
+  <div class="drawer-header">
+    <div class="drawer-header-left">
+      <div class="drawer-eyebrow" id="drawer-asig-eyebrow">Nueva Asignatura</div>
+      <div class="drawer-title" id="drawer-asig-title">Crear Asignatura</div>
+    </div>
+    <button class="drawer-close" onclick="closeAsignaturaDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
+    <input type="hidden" id="a-id"/>
+
+    <div class="form-section">
+      <div class="form-section-title">Identificación</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Código <span class="required">*</span></label>
+          <input id="a-codigo" type="text" placeholder="Ej: INF101" style="text-transform:uppercase"/>
+          <div class="field-hint">Máximo 10 caracteres, único</div>
+          <div class="field-error" id="err-a-codigo">Campo obligatorio</div>
+        </div>
+        <div class="field">
+          <label>Fecha de Creación <span class="required">*</span></label>
+          <input id="a-fecha" type="date"/>
+          <div class="field-error" id="err-a-fecha">Fecha requerida</div>
+        </div>
+        <div class="field full">
+          <label>Nombre de la Asignatura <span class="required">*</span></label>
+          <input id="a-nombre" type="text" placeholder="Ej: Fundamentos de Programación"/>
+          <div class="field-error" id="err-a-nombre">Campo obligatorio</div>
+        </div>
+        <div class="field full">
+          <label>Descripción</label>
+          <textarea id="a-descripcion" placeholder="Breve descripción del contenido y objetivos de la asignatura…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Carga Académica</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Créditos <span class="required">*</span></label>
+          <input id="a-creditos" type="number" min="1" max="10" placeholder="3"/>
+          <div class="field-error" id="err-a-creditos">Valor requerido</div>
+        </div>
+        <div class="field">
+          <label>Horas por Semana <span class="required">*</span></label>
+          <input id="a-horas" type="number" min="1" max="20" placeholder="4"/>
+          <div class="field-error" id="err-a-horas">Valor requerido</div>
+        </div>
+        <div class="field">
+          <label>Tipo de Asignatura</label>
+          <select id="a-obligatoria">
+            <option value="true">⭐ Obligatoria</option>
+            <option value="false">🔓 Electiva</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Docente Asignado <span class="required">*</span></label>
+          <select id="a-docente">
+            <option value="">-- Seleccione docente --</option>
+          </select>
+          <div class="field-error" id="err-a-docente">Seleccione un docente</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <button class="btn btn-ghost" onclick="closeAsignaturaDrawer()">Cancelar</button>
+    <button class="btn btn-primary" id="btn-save-asig" onclick="saveAsignatura()">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Guardar Asignatura
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     CONFIRM DIALOG
+════════════════════════════════════════════════════════════ -->
+<div class="dialog-overlay" id="dialog-overlay">
+  <div class="dialog">
+    <div class="dialog-icon">⚠️</div>
+    <h3 id="dialog-title">Confirmar eliminación</h3>
+    <p id="dialog-msg">¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.</p>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" onclick="closeDialog()">Cancelar</button>
+      <button class="btn btn-danger-soft" id="btn-confirm-delete" onclick="confirmDelete()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     TOAST STACK
+════════════════════════════════════════════════════════════ -->
+<div class="toast-stack" id="toast-stack"></div>
+
+<!-- ════════════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════════════ -->
+<script>
+const API = '';
+const AVATAR_COLORS = ['avatar-red','avatar-blue','avatar-green','avatar-amber','avatar-purple'];
+
+// ─── STATE ────────────────────────────────────────────────────
+let docentesData    = [];
+let asignaturasData = [];
+let deleteTarget    = null;
+
+// ─── CLOCK ────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('es-CO', {hour12: false});
+  const days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const el = document.getElementById('dash-date');
+  if (el) el.textContent = `${days[now.getDay()]}, ${now.getDate()} de ${months[now.getMonth()]} de ${now.getFullYear()}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ─── NAVIGATION ───────────────────────────────────────────────
+function navigate(view, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('view-' + view).classList.add('active');
+  if (view === 'docentes')    loadDocentes();
+  if (view === 'asignaturas') loadAsignaturas();
+  if (view === 'dashboard')   loadDashboard();
+}
+
+// ─── TOAST ────────────────────────────────────────────────────
+const TOAST_ICONS = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+
+function toast(title, msg = '', type = 'success') {
+  const stack = document.getElementById('toast-stack');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.style.position = 'relative';
+  t.innerHTML = `
+    <div class="toast-icon">${TOAST_ICONS[type]}</div>
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+    </div>
+    <div class="toast-progress"></div>`;
+  stack.appendChild(t);
+  requestAnimationFrame(() => { requestAnimationFrame(() => { t.classList.add('show'); }); });
+  setTimeout(() => {
+    t.classList.add('hide');
+    setTimeout(() => t.remove(), 400);
+  }, 3500);
+}
+
+// ─── DIALOG ───────────────────────────────────────────────────
+function openDialog(title, msg, onConfirm) {
+  document.getElementById('dialog-title').textContent = title;
+  document.getElementById('dialog-msg').textContent = msg;
+  deleteTarget = onConfirm;
+  document.getElementById('dialog-overlay').classList.add('open');
+}
+function closeDialog() {
+  document.getElementById('dialog-overlay').classList.remove('open');
+  deleteTarget = null;
+}
+function confirmDelete() {
+  if (deleteTarget) { deleteTarget(); }
+  closeDialog();
+}
+
+// ─── AVATAR ───────────────────────────────────────────────────
+function getAvatar(nombre, apellido) {
+  const initials = (nombre[0] || '') + (apellido[0] || '');
+  const idx = (nombre.charCodeAt(0) + (apellido.charCodeAt(0) || 0)) % AVATAR_COLORS.length;
+  return `<div class="avatar ${AVATAR_COLORS[idx]}">${initials.toUpperCase()}</div>`;
+}
+
+// ─── CONTRACT BADGE ───────────────────────────────────────────
+function contractBadge(c) {
+  const map = {
+    P: ['badge-blue',   'Planta'],
+    C: ['badge-purple', 'Cátedra'],
+    T: ['badge-amber',  'Temporal'],
+  };
+  const [cls, label] = map[c] || ['badge-gold', c];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+// ─── FORMAT DATE ──────────────────────────────────────────────
+function fmtDate(d) {
+  if (!d) return '–';
+  const [y, m, day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════
+async function loadDashboard() {
+  try {
+    const [dr, ar] = await Promise.all([fetch('/api/docentes'), fetch('/api/asignaturas')]);
+    const [docentes, asignaturas] = await Promise.all([dr.json(), ar.json()]);
+    docentesData    = docentes;
+    asignaturasData = asignaturas;
+
+    document.getElementById('st-docentes').textContent     = docentes.length;
+    document.getElementById('st-asignaturas').textContent  = asignaturas.length;
+    document.getElementById('st-activos').textContent      = docentes.filter(d => d.activo).length;
+    document.getElementById('st-obligatorias').textContent = asignaturas.filter(a => a.obligatoria).length;
+    document.getElementById('nb-docentes').textContent     = docentes.length;
+    document.getElementById('nb-asignaturas').textContent  = asignaturas.length;
+
+    // Recent docentes
+    const rd = document.getElementById('recent-docentes');
+    if (!docentes.length) {
+      rd.innerHTML = `<div class="empty-state"><div class="empty-state-icon">👨‍🏫</div><h3>Sin docentes</h3></div>`;
+    } else {
+      rd.innerHTML = docentes.slice(0, 5).map(d => `
+        <div class="recent-item" onclick="navigate('docentes', document.querySelectorAll('.nav-item')[2])">
+          ${getAvatar(d.nombres, d.apellidos)}
+          <div class="recent-item-info">
+            <div class="recent-item-name">${d.nombres} ${d.apellidos}</div>
+            <div class="recent-item-sub">${d.correo}</div>
+          </div>
+          <div class="recent-item-right">
+            ${d.activo ? '<span class="badge badge-green"><span class="badge-dot"></span>Activo</span>' : '<span class="badge badge-red">Inactivo</span>'}
+          </div>
+        </div>`).join('');
+    }
+
+    // Recent asignaturas
+    const ra = document.getElementById('recent-asignaturas');
+    if (!asignaturas.length) {
+      ra.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📚</div><h3>Sin asignaturas</h3></div>`;
+    } else {
+      ra.innerHTML = asignaturas.slice(0, 5).map(a => `
+        <div class="recent-item" onclick="navigate('asignaturas', document.querySelectorAll('.nav-item')[3])">
+          <div style="width:32px;height:32px;border-radius:6px;background:var(--blue-bg);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--blue);font-family:'Syne',sans-serif;flex-shrink:0">${a.codigo ? a.codigo.slice(0,3) : '–'}</div>
+          <div class="recent-item-info">
+            <div class="recent-item-name">${a.nombre}</div>
+            <div class="recent-item-sub">${a.creditos} créditos · ${a.docenteNombre || '–'}</div>
+          </div>
+          <div class="recent-item-right">
+            ${a.obligatoria ? '<span class="badge badge-gold">Obligatoria</span>' : '<span class="badge badge-purple">Electiva</span>'}
+          </div>
+        </div>`).join('');
+    }
+  } catch(e) {
+    toast('Error de conexión', 'No se pudo conectar con el servidor', 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DOCENTES
+// ═══════════════════════════════════════════════════════════════
+async function loadDocentes() {
+  try {
+    const r = await fetch('/api/docentes');
+    docentesData = await r.json();
+    renderDocentes(docentesData);
+    document.getElementById('nb-docentes').textContent = docentesData.length;
+  } catch(e) {
+    document.getElementById('tbody-docentes').innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">⚠️</div><h3>Error al cargar</h3><p>No se pudo conectar con el servidor</p></div></td></tr>`;
+  }
+}
+
+function renderDocentes(list) {
+  const tbody = document.getElementById('tbody-docentes');
+  document.getElementById('docentes-count-label').textContent = `${list.length} docente${list.length !== 1 ? 's' : ''}`;
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">👨‍🏫</div><h3>No hay docentes</h3><p>Agrega el primer docente con el botón "Nuevo Docente"</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map((d, i) => `
+    <tr>
+      <td>
+        <div class="td-name">
+          ${getAvatar(d.nombres, d.apellidos)}
+          <div class="td-name-info">
+            <strong>${d.nombres} ${d.apellidos}</strong>
+            <small>${d.correo}</small>
+          </div>
+        </div>
+      </td>
+      <td class="td-mono">${d.cedula}</td>
+      <td class="td-mono">${d.telefono || '–'}</td>
+      <td>${fmtDate(d.fechaIngreso)}</td>
+      <td>${contractBadge(d.tipoContrato)}</td>
+      <td>
+        ${d.activo
+          ? '<span class="badge badge-green"><span class="badge-dot"></span>Activo</span>'
+          : '<span class="badge badge-red"><span class="badge-dot"></span>Inactivo</span>'}
+      </td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn-icon edit" title="Editar" onclick="editDocente(${d.id})">✏️</button>
+          <button class="btn-icon delete" title="Eliminar" onclick="askDeleteDocente(${d.id}, '${d.nombres} ${d.apellidos}')">🗑️</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function filterDocentes() {
+  const q = document.getElementById('search-docentes').value.toLowerCase();
+  const filtered = docentesData.filter(d =>
+    `${d.nombres} ${d.apellidos} ${d.cedula} ${d.correo}`.toLowerCase().includes(q));
+  renderDocentes(filtered);
+}
+
+// ── Drawer Docente ──
+function openDocenteDrawer(id) {
+  clearDocenteForm();
+  document.getElementById('drawer-docente-eyebrow').textContent = 'Nuevo Registro';
+  document.getElementById('drawer-docente-title').textContent   = 'Crear Docente';
+  document.getElementById('drawer-docente').classList.add('open');
+  document.getElementById('backdrop-docente').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDocenteDrawer() {
+  document.getElementById('drawer-docente').classList.remove('open');
+  document.getElementById('backdrop-docente').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function clearDocenteForm() {
+  ['d-id','d-nombres','d-apellidos','d-cedula','d-correo','d-telefono'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.classList.remove('error'); }
+  });
+  document.getElementById('d-fecha').value     = '';
+  document.getElementById('d-contrato').value  = '';
+  document.getElementById('d-activo').checked  = true;
+  document.querySelectorAll('.field-error').forEach(e => e.classList.remove('show'));
+}
+
+function editDocente(id) {
+  const d = docentesData.find(x => x.id === id);
+  if (!d) return;
+  clearDocenteForm();
+  document.getElementById('d-id').value        = d.id;
+  document.getElementById('d-nombres').value   = d.nombres;
+  document.getElementById('d-apellidos').value = d.apellidos;
+  document.getElementById('d-cedula').value    = d.cedula;
+  document.getElementById('d-correo').value    = d.correo;
+  document.getElementById('d-telefono').value  = d.telefono || '';
+  document.getElementById('d-fecha').value     = d.fechaIngreso || '';
+  document.getElementById('d-contrato').value  = d.tipoContrato;
+  document.getElementById('d-activo').checked  = d.activo;
+  document.getElementById('drawer-docente-eyebrow').textContent = 'Editando Registro';
+  document.getElementById('drawer-docente-title').textContent   = `${d.nombres} ${d.apellidos}`;
+  document.getElementById('drawer-docente').classList.add('open');
+  document.getElementById('backdrop-docente').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function validateDocente() {
+  let ok = true;
+  const rules = [
+    ['d-nombres',  'err-d-nombres',  v => v.trim().length > 0],
+    ['d-apellidos','err-d-apellidos',v => v.trim().length > 0],
+    ['d-cedula',   'err-d-cedula',   v => v.trim().length > 0],
+    ['d-correo',   'err-d-correo',   v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)],
+    ['d-fecha',    'err-d-fecha',    v => v.trim().length > 0],
+    ['d-contrato', 'err-d-contrato', v => ['P','C','T'].includes(v)],
+  ];
+  rules.forEach(([fid, eid, fn]) => {
+    const el  = document.getElementById(fid);
+    const err = document.getElementById(eid);
+    if (!fn(el.value)) {
+      el.classList.add('error');
+      err.classList.add('show');
+      ok = false;
+    } else {
+      el.classList.remove('error');
+      err.classList.remove('show');
+    }
+  });
+  return ok;
+}
+
+async function saveDocente() {
+  if (!validateDocente()) { toast('Formulario incompleto', 'Revisa los campos marcados en rojo', 'warning'); return; }
+  const id  = document.getElementById('d-id').value;
+  const btn = document.getElementById('btn-save-docente');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block"></span> Guardando…';
+  const body = {
+    nombres:      document.getElementById('d-nombres').value.trim(),
+    apellidos:    document.getElementById('d-apellidos').value.trim(),
+    cedula:       document.getElementById('d-cedula').value.trim(),
+    correo:       document.getElementById('d-correo').value.trim(),
+    telefono:     document.getElementById('d-telefono').value.trim() || null,
+    fechaIngreso: document.getElementById('d-fecha').value,
+    tipoContrato: document.getElementById('d-contrato').value,
+    activo:       document.getElementById('d-activo').checked,
+  };
+  try {
+    const method = id ? 'PUT' : 'POST';
+    const url    = id ? `/api/docentes/${id}` : '/api/docentes';
+    const r = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    if (!r.ok) { const t = await r.text(); throw new Error(t); }
+    toast(id ? '✅ Docente actualizado' : '✅ Docente creado', `${body.nombres} ${body.apellidos}`);
+    closeDocenteDrawer();
+    loadDocentes();
+    loadDashboard();
+  } catch(e) {
+    toast('Error al guardar', e.message.slice(0, 100), 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar Docente';
+  }
+}
+
+function askDeleteDocente(id, nombre) {
+  openDialog(
+    'Eliminar Docente',
+    `¿Estás seguro de que deseas eliminar a "${nombre}"? Si tiene asignaturas asignadas, no podrá ser eliminado.`,
+    () => deleteDocente(id)
+  );
+}
+
+async function deleteDocente(id) {
+  try {
+    const r = await fetch(`/api/docentes/${id}`, { method: 'DELETE' });
+    if (r.status === 409) {
+      const data = await r.json();
+      toast('No se puede eliminar', data.error, 'warning');
+      return;
+    }
+    if (!r.ok) throw new Error('Error al eliminar');
+    toast('Docente eliminado', '', 'success');
+    loadDocentes();
+    loadDashboard();
+  } catch(e) {
+    toast('Error', e.message, 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ASIGNATURAS
+// ═══════════════════════════════════════════════════════════════
+async function loadAsignaturas() {
+  try {
+    const [ar, dr] = await Promise.all([fetch('/api/asignaturas'), fetch('/api/docentes')]);
+    asignaturasData = await ar.json();
+    docentesData    = await dr.json();
+    renderAsignaturas(asignaturasData);
+    document.getElementById('nb-asignaturas').textContent = asignaturasData.length;
+  } catch(e) {
+    document.getElementById('tbody-asignaturas').innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">⚠️</div><h3>Error al cargar</h3></div></td></tr>`;
+  }
+}
+
+function renderAsignaturas(list) {
+  const tbody = document.getElementById('tbody-asignaturas');
+  document.getElementById('asignaturas-count-label').textContent = `${list.length} asignatura${list.length !== 1 ? 's' : ''}`;
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">📚</div><h3>No hay asignaturas</h3><p>Agrega la primera asignatura con el botón "Nueva Asignatura"</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(a => `
+    <tr>
+      <td>
+        <span style="display:inline-flex;align-items:center;justify-content:center;background:var(--blue-bg);color:var(--blue);border:1px solid rgba(59,130,246,0.2);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:.04em">
+          ${a.codigo}
+        </span>
+      </td>
+      <td>
+        <div style="font-weight:600;font-size:13.5px;color:var(--text-primary)">${a.nombre}</div>
+        <div style="font-size:12px;color:var(--text-muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${a.descripcion || ''}">${a.descripcion || '–'}</div>
+      </td>
+      <td style="text-align:center">
+        <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text-primary)">${a.creditos}</span>
+        <div style="font-size:11px;color:var(--text-muted)">créditos</div>
+      </td>
+      <td style="text-align:center">
+        <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text-primary)">${a.horasSemana}</span>
+        <div style="font-size:11px;color:var(--text-muted)">hrs/sem</div>
+      </td>
+      <td>
+        <div style="font-size:13px;font-weight:500;color:var(--text-secondary)">${a.docenteNombre || '–'}</div>
+      </td>
+      <td style="font-size:12.5px;color:var(--text-secondary)">${fmtDate(a.fechaCreacion)}</td>
+      <td>${a.obligatoria
+        ? '<span class="badge badge-gold">Obligatoria</span>'
+        : '<span class="badge badge-purple">Electiva</span>'}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn-icon edit" title="Editar" onclick="editAsignatura(${a.id})">✏️</button>
+          <button class="btn-icon delete" title="Eliminar" onclick="askDeleteAsignatura(${a.id}, '${a.nombre.replace(/'/g,"\\'")}')">🗑️</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function filterAsignaturas() {
+  const q = document.getElementById('search-asignaturas').value.toLowerCase();
+  const filtered = asignaturasData.filter(a =>
+    `${a.codigo} ${a.nombre} ${a.docenteNombre || ''}`.toLowerCase().includes(q));
+  renderAsignaturas(filtered);
+}
+
+// ── Drawer Asignatura ──
+async function openAsignaturaDrawer() {
+  clearAsignaturaForm();
+  await fillDocenteSelect();
+  document.getElementById('drawer-asig-eyebrow').textContent = 'Nueva Asignatura';
+  document.getElementById('drawer-asig-title').textContent   = 'Crear Asignatura';
+  document.getElementById('drawer-asignatura').classList.add('open');
+  document.getElementById('backdrop-asignatura').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAsignaturaDrawer() {
+  document.getElementById('drawer-asignatura').classList.remove('open');
+  document.getElementById('backdrop-asignatura').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function clearAsignaturaForm() {
+  ['a-id','a-codigo','a-nombre','a-creditos','a-horas','a-descripcion'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.classList.remove('error'); }
+  });
+  document.getElementById('a-fecha').value       = '';
+  document.getElementById('a-obligatoria').value = 'true';
+  document.getElementById('a-docente').value     = '';
+  document.querySelectorAll('.field-error').forEach(e => e.classList.remove('show'));
+}
+
+async function fillDocenteSelect(selectedId) {
+  if (!docentesData.length) {
+    const r = await fetch('/api/docentes');
+    docentesData = await r.json();
+  }
+  const sel = document.getElementById('a-docente');
+  const activos = docentesData.filter(d => d.activo);
+  sel.innerHTML = '<option value="">-- Seleccione docente --</option>' +
+    activos.map(d => `<option value="${d.id}">${d.nombres} ${d.apellidos}</option>`).join('');
+  if (selectedId) sel.value = selectedId;
+}
+
+async function editAsignatura(id) {
+  const a = asignaturasData.find(x => x.id === id);
+  if (!a) return;
+  clearAsignaturaForm();
+  await fillDocenteSelect(a.docenteId);
+  document.getElementById('a-id').value          = a.id;
+  document.getElementById('a-codigo').value      = a.codigo;
+  document.getElementById('a-nombre').value      = a.nombre;
+  document.getElementById('a-creditos').value    = a.creditos;
+  document.getElementById('a-horas').value       = a.horasSemana;
+  document.getElementById('a-descripcion').value = a.descripcion || '';
+  document.getElementById('a-fecha').value       = a.fechaCreacion || '';
+  document.getElementById('a-obligatoria').value = String(a.obligatoria);
+  document.getElementById('drawer-asig-eyebrow').textContent = 'Editando Asignatura';
+  document.getElementById('drawer-asig-title').textContent   = a.nombre;
+  document.getElementById('drawer-asignatura').classList.add('open');
+  document.getElementById('backdrop-asignatura').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function validateAsignatura() {
+  let ok = true;
+  const rules = [
+    ['a-codigo',  'err-a-codigo',  v => v.trim().length > 0 && v.trim().length <= 10],
+    ['a-nombre',  'err-a-nombre',  v => v.trim().length > 0],
+    ['a-creditos','err-a-creditos',v => parseInt(v) > 0],
+    ['a-horas',   'err-a-horas',   v => parseInt(v) > 0],
+    ['a-fecha',   'err-a-fecha',   v => v.trim().length > 0],
+    ['a-docente', 'err-a-docente', v => v !== ''],
+  ];
+  rules.forEach(([fid, eid, fn]) => {
+    const el  = document.getElementById(fid);
+    const err = document.getElementById(eid);
+    if (!fn(el.value)) {
+      el.classList.add('error');
+      err.classList.add('show');
+      ok = false;
+    } else {
+      el.classList.remove('error');
+      err.classList.remove('show');
+    }
+  });
+  return ok;
+}
+
+async function saveAsignatura() {
+  if (!validateAsignatura()) { toast('Formulario incompleto', 'Revisa los campos marcados en rojo', 'warning'); return; }
+  const id  = document.getElementById('a-id').value;
+  const btn = document.getElementById('btn-save-asig');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block"></span> Guardando…';
+  const body = {
+    codigo:       document.getElementById('a-codigo').value.trim().toUpperCase(),
+    nombre:       document.getElementById('a-nombre').value.trim(),
+    creditos:     parseInt(document.getElementById('a-creditos').value),
+    horasSemana:  parseInt(document.getElementById('a-horas').value),
+    descripcion:  document.getElementById('a-descripcion').value.trim() || null,
+    fechaCreacion:document.getElementById('a-fecha').value,
+    obligatoria:  document.getElementById('a-obligatoria').value === 'true',
+    docenteId:    parseInt(document.getElementById('a-docente').value),
+  };
+  try {
+    const method = id ? 'PUT' : 'POST';
+    const url    = id ? `/api/asignaturas/${id}` : '/api/asignaturas';
+    const r = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    if (!r.ok) { const t = await r.text(); throw new Error(t); }
+    toast(id ? '✅ Asignatura actualizada' : '✅ Asignatura creada', body.nombre);
+    closeAsignaturaDrawer();
+    loadAsignaturas();
+    loadDashboard();
+  } catch(e) {
+    toast('Error al guardar', e.message.slice(0, 100), 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar Asignatura';
+  }
+}
+
+function askDeleteAsignatura(id, nombre) {
+  openDialog('Eliminar Asignatura', `¿Estás seguro de que deseas eliminar "${nombre}"?`, () => deleteAsignatura(id));
+}
+
+async function deleteAsignatura(id) {
+  try {
+    const r = await fetch(`/api/asignaturas/${id}`, { method: 'DELETE' });
+    if (!r.ok) throw new Error('Error al eliminar');
+    toast('Asignatura eliminada', '', 'success');
+    loadAsignaturas();
+    loadDashboard();
+  } catch(e) {
+    toast('Error', e.message, 'error');
+  }
+}
+
+// ─── SPIN ANIMATION ───────────────────────────────────────────
+const style = document.createElement('style');
+style.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
+document.head.appendChild(style);
+
+// ─── INIT ─────────────────────────────────────────────────────
+loadDashboard();
+</script>
+</body>
+</html>

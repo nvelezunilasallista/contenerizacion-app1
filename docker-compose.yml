@@ -1,0 +1,51 @@
+services:
+
+  mysql-db:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
+    container_name: poligran-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: poligran2024
+      MYSQL_DATABASE:      politecnico_db
+      MYSQL_USER:          poligran_user
+      MYSQL_PASSWORD:      poligran_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - poligran-mysql-data:/var/lib/mysql
+    networks:
+      - poligran-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-ppoligran2024"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  quarkus-app:
+    build:
+      context: ./quarkus-app
+      dockerfile: Dockerfile
+    container_name: poligran-app
+    restart: unless-stopped
+    ports:
+      - "8989:8989"
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: "jdbc:mysql://mysql-db:3306/politecnico_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Bogota"
+      QUARKUS_DATASOURCE_USERNAME: poligran_user
+      QUARKUS_DATASOURCE_PASSWORD: poligran_pass
+    networks:
+      - poligran-net
+
+volumes:
+  poligran-mysql-data:
+    name: poligran-mysql-data
+
+networks:
+  poligran-net:
+    name: poligran-net
+    driver: bridge
