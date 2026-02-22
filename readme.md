@@ -51,18 +51,6 @@ Enable-WindowsOptionalFeature -Online -FeatureName Containers -All
 
 ---
 
-##  Verificar que la virtualización está activa
-
-```powershell
-# Muestra información del sistema, incluyendo si Hyper-V está disponible
-systeminfo | findstr /i "Hyper-V"
-
-# Muestra propiedades detalladas de Hyper-V en el sistema
-Get-ComputerInfo -Property "HyperV*"
-```
-
----
-
 ## Verificar instalación de Docker
 
 ```bash
