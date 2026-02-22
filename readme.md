@@ -1,5 +1,19 @@
 # Guía de instalación y configuración de Docker
 
+**Integrantes:**
+Néstor Vélez Vargas
+
+---
+
+## Instalación de Docker Desktop
+
+- Todos los comandos de **PowerShell** deben ejecutarse como **Administrador**.
+
+```powershell
+# Instala Docker Desktop desde el repositorio oficial de winget (evita el error de msstore)
+winget install -e --id Docker.DockerDesktop --source winget --accept-package-agreements --accept-source-agreements
+```
+
 ---
 
 ## Instalación de Docker Desktop
@@ -37,7 +51,7 @@ Enable-WindowsOptionalFeature -Online -FeatureName Containers -All
 
 ---
 
-## ✅ Verificar que la virtualización está activa
+##  Verificar que la virtualización está activa
 
 ```powershell
 # Muestra información del sistema, incluyendo si Hyper-V está disponible
